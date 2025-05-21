@@ -1,15 +1,16 @@
-# Edukačný Tetris – 1. iterácia (opravena verzia)
+# Edukačný Tetris – 1. iterácia (finálna verzia)
 
 ## ✅ Funkcie:
-- Klasické Tetris tvary: otáčanie (↑), pohyb, padanie
+- Otáčanie: ⬆️ (↑) – teraz opravené a funkčné
+- Presun: ⬅️ ➡️, Pád: ⬇️
 - Správne miznutie riadkov
 - Každých 30 sekúnd otázka: "Aký je OBSAH (v cm²)?"
-- UI text presunutý úplne pod hraciu plochu
-- Správne zobrazenie skóre, otázok a odpovede
-- Rotácia (↑) funguje
-- Reštart hry: `R` funguje spoľahlivo
-- Strana políčka = 1 cm
+- Otázka a odpoveď umiestnené **viditeľne pod hracou plochou**
+- Skóre: +100 / -100
+- Zrýchlenie po 5 správnych odpovediach
+- Reštart hry: `R`
+- Strana políčka: 1 cm
 
-## Spustenie:
+## Použitie:
 - Rozbaľ ZIP
 - Otvor `index.html` v prehliadači
