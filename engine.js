@@ -1,198 +1,147 @@
-let grid = Array.from({length: 20}, () => Array(10).fill(0));
-let tetrominoes = [
-  [[1, 1, 1, 1]], [[1, 1], [1, 1]], [[0, 1, 0], [1, 1, 1]],
-  [[1, 0, 0], [1, 1, 1]], [[0, 0, 1], [1, 1, 1]],
-  [[0, 1, 1], [1, 1, 0]], [[1, 1, 0], [0, 1, 1]]
+let grid, currentPiece, gridCols = 10, gridRows = 20, cellSize = 30;
+let dropInterval = 1000, lastDropTime = 0;
+let score = 0, answerShown = false;
+let shapes = [
+  [[1, 1, 1, 1]],
+  [[1, 1], [1, 1]],
+  [[0, 1, 0], [1, 1, 1]],
+  [[1, 1, 0], [0, 1, 1]],
+  [[0, 1, 1], [1, 1, 0]],
+  [[1, 0, 0], [1, 1, 1]],
+  [[0, 0, 1], [1, 1, 1]]
 ];
-let current, pos, timer = 0, fallSpeed = 30;
-let score = 0, questionActive = false, correctAnswer = 0, userInput = "", rightAnswers = 0;
-let gameOver = false;
-let rotateCooldown = 0;
 
 function setup() {
-  createCanvas(300, 520);
-  frameRate(30);
-  startGame();
+  createCanvas(gridCols * cellSize, gridRows * cellSize).parent("game-container");
+  resetGame();
 }
 
 function draw() {
-  background(250);
+  background(255);
   drawGrid();
-  if (!gameOver) drawTetromino();
-  drawUI();
+  drawPiece(currentPiece);
 
-  if (gameOver || questionActive) return;
-
-  // pohyb
-  if (keyIsDown(LEFT_ARROW)) {
-    pos.x--;
-    if (collides()) pos.x++;
-  }
-  if (keyIsDown(RIGHT_ARROW)) {
-    pos.x++;
-    if (collides()) pos.x--;
-  }
-  if (keyIsDown(DOWN_ARROW)) {
-    pos.y++;
-    if (collides()) {
-      pos.y--;
-      merge();
-      clearLines();
-      spawn();
+  if (millis() - lastDropTime > dropInterval && !answerShown) {
+    if (!movePiece(currentPiece, 0, 1)) {
+      mergeToGrid(currentPiece);
+      clearFullRows();
+      newPiece();
     }
+    lastDropTime = millis();
   }
-
-  // rotácia s cooldownom
-  if (rotateCooldown === 0 && keyIsDown(UP_ARROW)) {
-    rotate();
-    rotateCooldown = 10;
-  }
-  if (rotateCooldown > 0) rotateCooldown--;
-
-  timer++;
-  if (timer % fallSpeed === 0) {
-    pos.y++;
-    if (collides()) {
-      pos.y--;
-      merge();
-      clearLines();
-      spawn();
-    }
-  }
-
-  if (frameCount % (30 * 30) === 0) askQuestion();
 }
 
-function keyPressed() {
-  const k = key.toUpperCase();
-  if (k === 'R') startGame();
+function resetGame() {
+  grid = Array.from({ length: gridRows }, () => Array(gridCols).fill(0));
+  newPiece();
+  score = 0;
+  updateScore();
+  answerShown = false;
+}
 
-  if (gameOver) return;
+function newPiece() {
+  let shape = random(shapes);
+  currentPiece = {
+    shape: shape.map(row => [...row]),
+    x: floor(gridCols / 2) - floor(shape[0].length / 2),
+    y: 0
+  };
+}
 
-  if (questionActive) {
-    if (keyCode === ENTER) {
-      if (parseInt(userInput) === correctAnswer) {
-        score += 100; rightAnswers++;
-        if (rightAnswers % 5 === 0) fallSpeed = max(5, fallSpeed - 5);
-      } else {
-        score -= 100;
-        alert("Zlá odpoveď. Správny obsah bol: " + correctAnswer + " cm²");
+function drawGrid() {
+  for (let r = 0; r < gridRows; r++) {
+    for (let c = 0; c < gridCols; c++) {
+      stroke(0);
+      fill(grid[r][c] ? "#79c2d0" : 255);
+      rect(c * cellSize, r * cellSize, cellSize, cellSize);
+    }
+  }
+}
+
+function drawPiece(p) {
+  fill("#e26a6a");
+  for (let r = 0; r < p.shape.length; r++) {
+    for (let c = 0; c < p.shape[r].length; c++) {
+      if (p.shape[r][c]) {
+        rect((p.x + c) * cellSize, (p.y + r) * cellSize, cellSize, cellSize);
       }
-      questionActive = false;
-      userInput = "";
-    } else if (keyCode === BACKSPACE) {
-      userInput = userInput.slice(0, -1);
-    } else if (key >= '0' && key <= '9') {
-      userInput += key;
     }
   }
 }
 
-function rotate() {
-  let newMatrix = current[0].map((_, i) => current.map(row => row[i])).reverse();
-  let old = current;
-  current = newMatrix;
-  if (collides()) current = old;
+function movePiece(p, dx, dy) {
+  if (!collides(p, dx, dy)) {
+    p.x += dx;
+    p.y += dy;
+    return true;
+  }
+  return false;
 }
 
-function collides() {
-  for (let y = 0; y < current.length; y++) {
-    for (let x = 0; x < current[y].length; x++) {
-      if (current[y][x]) {
-        let nx = pos.x + x, ny = pos.y + y;
-        if (ny >= 20 || nx < 0 || nx >= 10 || grid[ny][nx]) return true;
+function collides(p, dx, dy) {
+  for (let r = 0; r < p.shape.length; r++) {
+    for (let c = 0; c < p.shape[r].length; c++) {
+      if (p.shape[r][c]) {
+        let newX = p.x + c + dx;
+        let newY = p.y + r + dy;
+        if (newX < 0 || newX >= gridCols || newY >= gridRows || (newY >= 0 && grid[newY][newX])) {
+          return true;
+        }
       }
     }
   }
   return false;
 }
 
-function merge() {
-  for (let y = 0; y < current.length; y++) {
-    for (let x = 0; x < current[y].length; x++) {
-      if (current[y][x]) {
-        let ny = pos.y + y, nx = pos.x + x;
-        if (ny < 0) {
-          gameOver = true;
-          return;
-        }
-        grid[ny][nx] = 1;
+function mergeToGrid(p) {
+  for (let r = 0; r < p.shape.length; r++) {
+    for (let c = 0; c < p.shape[r].length; c++) {
+      if (p.shape[r][c]) {
+        grid[p.y + r][p.x + c] = 1;
       }
     }
   }
 }
 
-function clearLines() {
-  for (let y = grid.length - 1; y >= 0; y--) {
-    if (grid[y].every(cell => cell === 1)) {
-      grid.splice(y, 1);
-      grid.unshift(Array(10).fill(0));
-      y++;
+function clearFullRows() {
+  for (let r = gridRows - 1; r >= 0; r--) {
+    if (grid[r].every(cell => cell)) {
+      grid.splice(r, 1);
+      grid.unshift(Array(gridCols).fill(0));
+      score += 10;
+      updateScore();
     }
   }
 }
 
-function drawGrid() {
-  for (let y = 0; y < 20; y++) {
-    for (let x = 0; x < 10; x++) {
-      if (grid[y][x]) {
-        fill(100, 200, 255);
-        rect(x * 30, y * 20, 30, 20);
-      }
-    }
+function updateScore() {
+  document.getElementById("score").innerText = "Skóre: " + score;
+}
+
+function rotatePiece(p) {
+  let newShape = p.shape[0].map((_, i) => p.shape.map(row => row[i])).reverse();
+  let testPiece = { shape: newShape, x: p.x, y: p.y };
+  if (!collides(testPiece, 0, 0)) {
+    p.shape = newShape;
   }
 }
 
-function drawTetromino() {
-  fill(255, 100, 100);
-  for (let y = 0; y < current.length; y++) {
-    for (let x = 0; x < current[y].length; x++) {
-      if (current[y][x]) {
-        rect((pos.x + x) * 30, (pos.y + y) * 20, 30, 20);
-      }
-    }
-  }
+function keyPressed() {
+  if (keyCode === LEFT_ARROW) movePiece(currentPiece, -1, 0);
+  else if (keyCode === RIGHT_ARROW) movePiece(currentPiece, 1, 0);
+  else if (keyCode === DOWN_ARROW) movePiece(currentPiece, 0, 1);
+  else if (keyCode === UP_ARROW) rotatePiece(currentPiece);
+  else if (key === "R" || key === "r") resetGame();
 }
 
-function drawUI() {
-  fill(0); textSize(14);
-  text("Skóre: " + score, 10, 20);
-  if (questionActive) {
-    text("Otázka: Aký je OBSAH (v cm²)?", 10, 440);
-    text("Tvoja odpoveď: " + userInput, 10, 460);
+function checkAnswer() {
+  const answer = parseInt(document.getElementById("answer-input").value);
+  const actual = grid.flat().reduce((a, b) => a + b, 0);
+  if (answer === actual) {
+    score += 50;
+  } else {
+    score -= 25;
   }
-  if (gameOver) {
-    fill(255, 0, 0);
-    text("Koniec hry – Stlač R pre reštart", 30, 200);
-  }
-}
-
-function askQuestion() {
-  questionActive = true;
-  correctAnswer = 0;
-  for (let y = 0; y < 20; y++) {
-    for (let x = 0; x < 10; x++) {
-      if (grid[y][x]) correctAnswer++;
-    }
-  }
-}
-
-function spawn() {
-  current = random(tetrominoes).map(row => row.slice());
-  pos = {x: 3, y: 0};
-  if (collides()) {
-    gameOver = true;
-  }
-}
-
-function startGame() {
-  grid = Array.from({length: 20}, () => Array(10).fill(0));
-  score = 0;
-  timer = 0;
-  fallSpeed = 30;
-  questionActive = false;
-  userInput = "";
-  gameOver = false;
-  rightAnswers = 0;
-  spawn();
+  updateScore();
+  document.getElementById("answer-input").value = "";
 }

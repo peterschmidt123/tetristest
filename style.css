@@ -1,0 +1,25 @@
+body {
+  font-family: sans-serif;
+  background: #f4f4f4;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+#game-container {
+  margin: auto;
+  margin-top: 10px;
+  background: #ffffff;
+  width: 300px;
+  height: 600px;
+  position: relative;
+}
+#question-container {
+  margin-top: 20px;
+}
+#ui {
+  padding-top: 10px;
+}
+canvas {
+  display: block;
+  margin: auto;
+}

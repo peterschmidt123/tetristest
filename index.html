@@ -1,20 +1,28 @@
 <!DOCTYPE html>
 <html lang="sk">
 <head>
-  <meta charset="UTF-8">
-  <title>Edukačný Tetris – Obsah (rotácia FIX)</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.min.js"></script>
-  <script src="engine.js"></script>
-  <style>
-    body { font-family: sans-serif; background: #f0f0f0; }
-    canvas { display: block; margin: 20px auto; }
-    #info { text-align: center; font-size: 14px; margin-top: -10px; color: #333; }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tetris - Obsah - Iterácia 1 (Opravené)</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="info">
-    ⬆️ Otoč | ⬅️➡️ Posuň | ⬇️ Pád | <br>
-    📏 Strana jedného políčka = 1 cm | 🎯 Enter = potvrď odpoveď | 🔁 R = reštart hry
+  <div id="ui">
+    <p>🎮 Tetris - Obsah - Iterácia 1 (Otáčanie opravené)</p>
+    <p>
+      ⬆️ = otoč | ⬅️➡️ = pohyb | ⬇️ = rýchle padanie | R = reštart<br>
+      ✏️ Strana jedného políčka = 1 cm
+    </p>
+    <p id="score">Skóre: 0</p>
   </div>
+  <main>
+    <div id="game-container"></div>
+    <div id="question-container">
+      <p id="question-text">Otázka: Aký je OBSAH (v cm²)?</p>
+      <input type="number" id="answer-input" placeholder="Tvoja odpoveď" />
+      <button onclick="checkAnswer()">OK</button>
+    </div>
+  </main>
+  <script src="engine.js"></script>
 </body>
 </html>
