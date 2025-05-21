@@ -78,7 +78,10 @@ function keyPressed() {
       spawn();
     }
   }
-  if (keyCode === UP_ARROW || key === 'ArrowUp') rotate();
+  if ((key === 'ArrowUp' || keyCode === UP_ARROW || keyCode === 38) && !questionActive) {
+    console.log("rotate!");
+    rotate();
+  }
 }
 
 function rotate() {
