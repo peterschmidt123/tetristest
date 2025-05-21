@@ -28,6 +28,7 @@ function draw() {
     if (collides()) {
       pos.y--;
       merge();
+      clearLines();
       spawn();
     }
   }
@@ -72,6 +73,7 @@ function keyPressed() {
     if (collides()) {
       pos.y--;
       merge();
+      clearLines();
       spawn();
     }
   }
@@ -108,6 +110,16 @@ function merge() {
         }
         grid[ny][nx] = 1;
       }
+    }
+  }
+}
+
+function clearLines() {
+  for (let y = grid.length - 1; y >= 0; y--) {
+    if (grid[y].every(cell => cell === 1)) {
+      grid.splice(y, 1);
+      grid.unshift(Array(10).fill(0));
+      y++;
     }
   }
 }
