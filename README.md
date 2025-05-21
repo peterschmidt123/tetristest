@@ -1,16 +1,15 @@
-# Edukačný Tetris – Režim OBSAH (final)
+# Edukačný Tetris – 1. iterácia
 
-Toto je plne funkčná hra Tetris s otázkami na výpočet obsahu dolnej časti mriežky.
+Toto je verzia, kde sa precvičuje výpočet obsahu plochy pomocou hry Tetris.
 
-## 🧩 Funkcie
-- Klasické Tetris tvary: I, O, T, L, J, S, Z
-- Rotácia (šípka hore), pohyb (vľavo/vpravo), pád (dolu)
-- Každých 30 sekúnd sa hra pozastaví s otázkou na OBSAH (v cm²)
-- Zadanie cez klávesnicu, ENTER = potvrdenie
-- Skóre: +100 správne, -100 nesprávne (+ zobrazenie správnej odpovede)
-- Hra sa zrýchli po 5 správnych odpovediach
-- Reštart hry klávesou R po skončení
+## Funkcie:
+- Klasické Tetris tvary (otáčanie, padanie, kolízie)
+- Každých 30 sekúnd sa objaví otázka: "Aký je OBSAH (v cm²)?"
+- Jedno políčko = plocha 1 cm² (strana = 1 cm)
+- Zrýchlenie hry po 5 správnych odpovediach
+- Skóre: +100 / -100
+- Reštart hry: klávesa R
 
-## ✅ Spustenie
+## Použitie:
 - Rozbaľ ZIP
 - Otvor `index.html` v prehliadači

@@ -150,8 +150,8 @@ function drawUI() {
   fill(0); textSize(14);
   text("Skóre: " + score, 10, 20);
   if (questionActive) {
-    text("Otázka: Aký je OBSAH (v cm²)?", 10, 360);
-    text("Tvoja odpoveď: " + userInput, 10, 380);
+    text("Otázka: Aký je OBSAH (v cm²)?", 10, 400);
+    text("Tvoja odpoveď: " + userInput, 10, 420);
   }
   if (gameOver) {
     fill(255, 0, 0);
