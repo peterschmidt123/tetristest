@@ -37,7 +37,8 @@ function draw() {
 }
 
 function keyPressed() {
-  if (key === 'R') startGame();
+  const k = key.toUpperCase();
+  if (k === 'R') startGame();
 
   if (gameOver) return;
 
@@ -77,7 +78,7 @@ function keyPressed() {
       spawn();
     }
   }
-  if (keyCode === UP_ARROW) rotate();
+  if (keyCode === UP_ARROW || key === 'ArrowUp') rotate();
 }
 
 function rotate() {
@@ -150,8 +151,8 @@ function drawUI() {
   fill(0); textSize(14);
   text("Skóre: " + score, 10, 20);
   if (questionActive) {
-    text("Otázka: Aký je OBSAH (v cm²)?", 10, 400);
-    text("Tvoja odpoveď: " + userInput, 10, 420);
+    text("Otázka: Aký je OBSAH (v cm²)?", 10, 460);
+    text("Tvoja odpoveď: " + userInput, 10, 480);
   }
   if (gameOver) {
     fill(255, 0, 0);
