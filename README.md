@@ -1,13 +1,12 @@
-# Edukačný Tetris – 1. iterácia FINAL FIXED
+# Edukačný Tetris – 1. iterácia (rotácia opravená)
 
-## ✅ Opravy:
-- 🔼 Otáčanie (↑) teraz spoľahlivo funguje vo všetkých prehliadačoch
-- 🔁 Reštart (`R`) plne funkčný
-- 🧮 Výpočet obsahu
-- 📝 Otázka/odpoveď v správnej pozícii pod plochou
-- ⚡ Zrýchlenie po 5 správnych odpovediach
+## ✅ Zmeny:
+- 🔼 Otáčanie teraz funguje cez `keyIsDown(UP_ARROW)` + cooldown
+- 🔁 Reštart (`R`)
+- 📉 Obsah pod plochou, otázky a odpovede
 - 📏 Strana políčka: 1 cm
-- ✅ Správne miznutie riadkov
+- ⚡ Zrýchlenie po 5 odpovediach
+- ✅ Riadky miznú
 
 ## Použitie:
 - Rozbaľ ZIP

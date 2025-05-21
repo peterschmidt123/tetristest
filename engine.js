@@ -7,9 +7,10 @@ let tetrominoes = [
 let current, pos, timer = 0, fallSpeed = 30;
 let score = 0, questionActive = false, correctAnswer = 0, userInput = "", rightAnswers = 0;
 let gameOver = false;
+let rotateCooldown = 0;
 
 function setup() {
-  createCanvas(300, 500);
+  createCanvas(300, 520);
   frameRate(30);
   startGame();
 }
@@ -21,6 +22,32 @@ function draw() {
   drawUI();
 
   if (gameOver || questionActive) return;
+
+  // pohyb
+  if (keyIsDown(LEFT_ARROW)) {
+    pos.x--;
+    if (collides()) pos.x++;
+  }
+  if (keyIsDown(RIGHT_ARROW)) {
+    pos.x++;
+    if (collides()) pos.x--;
+  }
+  if (keyIsDown(DOWN_ARROW)) {
+    pos.y++;
+    if (collides()) {
+      pos.y--;
+      merge();
+      clearLines();
+      spawn();
+    }
+  }
+
+  // rotácia s cooldownom
+  if (rotateCooldown === 0 && keyIsDown(UP_ARROW)) {
+    rotate();
+    rotateCooldown = 10;
+  }
+  if (rotateCooldown > 0) rotateCooldown--;
 
   timer++;
   if (timer % fallSpeed === 0) {
@@ -58,29 +85,6 @@ function keyPressed() {
     } else if (key >= '0' && key <= '9') {
       userInput += key;
     }
-    return;
-  }
-
-  if (keyCode === LEFT_ARROW) {
-    pos.x--;
-    if (collides()) pos.x++;
-  }
-  if (keyCode === RIGHT_ARROW) {
-    pos.x++;
-    if (collides()) pos.x--;
-  }
-  if (keyCode === DOWN_ARROW) {
-    pos.y++;
-    if (collides()) {
-      pos.y--;
-      merge();
-      clearLines();
-      spawn();
-    }
-  }
-  if ((key === 'ArrowUp' || keyCode === UP_ARROW || keyCode === 38) && !questionActive) {
-    console.log("rotate!");
-    rotate();
   }
 }
 
