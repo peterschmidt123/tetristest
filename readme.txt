@@ -1,0 +1,14 @@
+ok abstrahujme teraz od leaderboardu, ak tak pridame ho neskor. zacnime odtialto s inym doplnkom funkcii. 
+k tejto funkcnej verzii dopln, alebo zmen (vsetko ostatne nech ostane) :
+1. Po troch odpovediach zmen dlzku strany na 2 cm. nemusis menit velkost policka, staci, ked :
+a)Upozornis na to hraca: Pri tretej odpovedi (zastani hry), daj popup, kde k povodnemu textu o tom , ci bola odpoved spravna alebo nie a kolko bodov hrac ziska alebo strati doplnis info,  ze sa meni dlzka strany policka. po odkliknuti hlasky hracom hra ide dalej 
+b)v hornej casti zmenis text na Strana jedneho policka = 2 cm. Tym padom obsah jedneho policka bude 4 cm stvorcove. 
+c)zmenis logiku hry tak , aby od tohto momentu ratala s obsahom policka 4 
+
+2. po dalsich troch odpovediach sa hra meni nasledovne :
+Odteraz sa pytas na to , z akych utvarov, ktore sa pouzivaju v tetrise a z akeho ich poctu,  vies zlozit spodny modry utvar . Priklad. Modre pole dole ma hodnotu 48 cm stvorcovych. to znamena, ze tam je 12 policok. 12 policok vies zostavit (jedna z moznosti) z troch utvarov tvaru L. Ake zmeny, co mna napadaju treba urobit od tohto okamihu:
+a)Upozornis na to hraca: Pri tretej odpovedi (od zaciatku hry teda 6), daj popup, kde k povodnemu textu o tom , ci bola odpoved spravna alebo nie a kolko bodov hrac ziska alebo strati doplnis info,  ze sa meni strategia hry podla toho , co ti tu popisujem
+
+b)zmenis logiku hry tak , aby od tohto momentu ratala spravne kombinacie tvarov , ktore v sume davaju obsah ako ma modre pole. 
+c)spodnu cast pod hracou plocou vymazes a nahradis pod sebou znakmi , ktore vyjadruju utvary tetrisu a vedla kazdeho symbolu das pole , do ktoreho sa moze zadat cislo hracom. Pridas aj pole zvysok : Ak nastane situacia , ze napriklad ostanu dve policka z kt uz nevies nic zostavit , zapise to hrac sem. Bacha hrac nesmie zadat vacsie cislo ako je najmensi utvar, lebo v tom pripade to mal zadat pri utvaroch, nie  do zvysku. Dalej pod tym alebo vedla toho bude tlacitko Potvrd. Hrac zada pocty utvarov , ktore podla neho zodpovedaju ploche modrej spodnej casti a pripadne zvysok. Stlaci potom POtvrd. Ty vyhodnitis spravnost. Spustis Pop up kde hraca informujes ci odpovedal spravne alebo nie  a kolko bodov mu pridavas , alebo odoberas. Zaroven body odratas alebo priratas  k celkovemu skore, ktore sa zobrazuje nad hracou plochou. takto to pokracuje dalej do nekonecna. Po dalsom zastaveni (30 sek) uz nemusis hracovy vysvetlovat zmenu strategie, len mu povies nech doplni pocty zodpovedajucoch utvarov a zvysku .  
+d) od tohto okamihu je za spravu odpoved 200 bodov a nespravnu strhnes 100

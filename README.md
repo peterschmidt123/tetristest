@@ -1,13 +1,14 @@
-# Edukačný Tetris – 1. iterácia (rotácia opravená)
+# Tetris - Obsah (Iterácia 1)
 
-## ✅ Zmeny:
-- 🔼 Otáčanie teraz funguje cez `keyIsDown(UP_ARROW)` + cooldown
-- 🔁 Reštart (`R`)
-- 📉 Obsah pod plochou, otázky a odpovede
-- 📏 Strana políčka: 1 cm
-- ⚡ Zrýchlenie po 5 odpovediach
-- ✅ Riadky miznú
+Edukačná hra v štýle Tetrisu, ktorá precvičuje výpočet obsahu (v cm²).  
+Otáčanie, pohyb a rýchle padanie funguje, otázky sa zobrazujú pod plátnom.
 
-## Použitie:
-- Rozbaľ ZIP
-- Otvor `index.html` v prehliadači
+## Ovládanie
+- ⬆️ otoč
+- ⬅️➡️ pohyb
+- ⬇️ rýchle padanie
+- `Enter` – potvrdenie odpovede
+- `R` – reštart
+
+## Inštalácia
+Stačí otvoriť `index.html` v prehliadači alebo nahrať na GitHub Pages.

@@ -2,27 +2,23 @@
 <html lang="sk">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Tetris - Obsah - Iterácia 1 (Opravené)</title>
+  <title>Tetris - Obsah - Iterácia 1</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="ui">
-    <p>🎮 Tetris - Obsah - Iterácia 1 (Otáčanie opravené)</p>
-    <p>
-      ⬆️ = otoč | ⬅️➡️ = pohyb | ⬇️ = rýchle padanie | R = reštart<br>
-      ✏️ Strana jedného políčka = 1 cm
-    </p>
-    <p id="score">Skóre: 0</p>
+  <div id="menu">
+    🎮 Tetris - Obsah<br />
+    ⬆️ = otoč | ⬅️➡️ = pohyb | ⬇️ = rýchle padanie | R = reštart<br />
+    📝 Strana jedného políčka = 1 cm
   </div>
-  <main>
-    <div id="game-container"></div>
-    <div id="question-container">
-      <p id="question-text">Otázka: Aký je OBSAH (v cm²)?</p>
-      <input type="number" id="answer-input" placeholder="Tvoja odpoveď" />
-      <button onclick="checkAnswer()">OK</button>
-    </div>
-  </main>
+  <div id="score">Skóre: 0</div>
+  <canvas id="gameCanvas" width="300" height="360"></canvas>
+  <div id="question">
+    <p>Otázka: Aký je OBSAH (v cm²)?</p>
+    <label>Tvoja odpoveď: <input id="answerInput" type="number" /></label>
+    <button onclick="submitAnswer()">✔️ Potvrď</button>
+  </div>
+  <div id="feedback" style="margin-top: 10px; font-weight: bold;"></div>
   <script src="engine.js"></script>
 </body>
 </html>

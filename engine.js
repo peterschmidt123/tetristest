@@ -1,147 +1,207 @@
-let grid, currentPiece, gridCols = 10, gridRows = 20, cellSize = 30;
-let dropInterval = 1000, lastDropTime = 0;
-let score = 0, answerShown = false;
-let shapes = [
-  [[1, 1, 1, 1]],
-  [[1, 1], [1, 1]],
-  [[0, 1, 0], [1, 1, 1]],
-  [[1, 1, 0], [0, 1, 1]],
-  [[0, 1, 1], [1, 1, 0]],
-  [[1, 0, 0], [1, 1, 1]],
-  [[0, 0, 1], [1, 1, 1]]
-];
 
-function setup() {
-  createCanvas(gridCols * cellSize, gridRows * cellSize).parent("game-container");
-  resetGame();
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+const COLS = 10, ROWS = 12, SIZE = 30;
+let board = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+const pieces = [
+  [[1, 1, 1, 1]], [[1, 1], [1, 1]], [[0, 1, 0], [1, 1, 1]],
+  [[1, 1, 0], [0, 1, 1]], [[0, 1, 1], [1, 1, 0]],
+  [[1, 0, 0], [1, 1, 1]], [[0, 0, 1], [1, 1, 1]]
+];
+let piece = null, x = 0, y = 0, score = 0;
+let interval = null;
+let gamePaused = false;
+let startTime = Date.now();
+
+function drawBlock(x, y, color = "red") {
+  ctx.fillStyle = color;
+  ctx.fillRect(x * SIZE, y * SIZE, SIZE, SIZE);
+  ctx.strokeStyle = "black";
+  ctx.strokeRect(x * SIZE, y * SIZE, SIZE, SIZE);
 }
 
-function draw() {
-  background(255);
-  drawGrid();
-  drawPiece(currentPiece);
-
-  if (millis() - lastDropTime > dropInterval && !answerShown) {
-    if (!movePiece(currentPiece, 0, 1)) {
-      mergeToGrid(currentPiece);
-      clearFullRows();
-      newPiece();
+function drawBoard() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      if (board[r][c]) drawBlock(c, r, "skyblue");
     }
-    lastDropTime = millis();
+  }
+  for (let r = 0; r < piece.length; r++) {
+    for (let c = 0; c < piece[r].length; c++) {
+      if (piece[r][c]) drawBlock(x + c, y + r);
+    }
+  }
+}
+
+function rotate(matrix) {
+  return matrix[0].map((_, i) => matrix.map(row => row[i]).reverse());
+}
+
+function spawnPiece() {
+  const newPiece = pieces[Math.floor(Math.random() * pieces.length)];
+  const testX = 3, testY = 0;
+  for (let r = 0; r < newPiece.length; r++) {
+    for (let c = 0; c < newPiece[r].length; c++) {
+      if (newPiece[r][c] && board[testY + r][testX + c]) {
+        clearInterval(interval);
+        gamePaused = true;
+        alert("🛑 Koniec hry. Tvoje skóre je " + score + ".");
+        return;
+      }
+    }
+  }
+  piece = newPiece;
+  x = testX;
+  y = testY;
+  drawBoard();
+}
+
+function merge() {
+  for (let r = 0; r < piece.length; r++) {
+    for (let c = 0; c < piece[r].length; c++) {
+      if (piece[r][c]) board[y + r][x + c] = 1;
+    }
+  }
+}
+
+
+function clearRows() {
+  for (let r = ROWS - 1; r >= 0; r--) {
+    if (board[r].every(val => val)) {
+      board.splice(r, 1);
+      board.unshift(Array(COLS).fill(0));
+      r++; // after removing row, check same index again
+    }
+  }
+
+  for (let r = ROWS - 1; r >= 0; r--) {
+    if (board[r].every(val => val)) {
+      board.splice(r, 1);
+      board.unshift(Array(COLS).fill(0));
+    }
+  }
+}
+
+function drop() {
+  if (!collision(0, 1, piece)) {
+    y++;
+  } else {
+    merge();
+    clearRows();
+    spawnPiece();
+  }
+  drawBoard();
+}
+
+function collision(dx, dy, newPiece) {
+  for (let r = 0; r < newPiece.length; r++) {
+    for (let c = 0; c < newPiece[r].length; c++) {
+      if (newPiece[r][c]) {
+        let nx = x + c + dx;
+        let ny = y + r + dy;
+        if (nx < 0 || nx >= COLS || ny >= ROWS || board[ny][nx]) return true;
+      }
+    }
+  }
+  return false;
+}
+
+function move(dir) {
+  if (!collision(dir, 0, piece)) {
+    x += dir;
+    drawBoard();
+  }
+}
+
+function rotatePiece() {
+  const rotated = rotate(piece);
+  if (!collision(0, 0, rotated)) {
+    piece = rotated;
+    drawBoard();
+  }
+}
+
+function gameLoop() {
+  if (!gamePaused) {
+    drop();
+    checkTimeForQuestion();
+  }
+}
+
+function askAreaQuestion() {
+  const questionText = document.querySelector("#question p");
+  if (questionText) {
+    questionText.textContent = "🟦 Prosím, vypočítaj OBSAH všetkých modrých políčok na spodku hracej plochy (v cm²):";
+  }
+  const input = document.getElementById("answerInput");
+  input.value = "";
+  input.focus();
+}
+
+function submitAnswer() {
+  const input = document.getElementById("answerInput");
+  const feedback = document.getElementById("feedback");
+  const userAns = parseInt(input.value);
+  const correct = board.flat().filter(v => v).length;
+  if (userAns === correct) {
+    score += 100;
+    feedback.textContent = "✅ Správne! Získavaš 100 bodov."; feedback.style.visibility = "visible"; alert("✅ Správne! Získavaš 100 bodov.");
+  } else {
+    score -= 100;
+    feedback.textContent = "❌ Nesprávne. Strácaš 100 bodov."; feedback.style.visibility = "visible"; alert("❌ Nesprávne. Strácaš 100 bodov.");
+  }
+  document.getElementById("score").textContent = "Skóre: " + score;
+  setTimeout(() => {
+    feedback.textContent = ""; feedback.style.visibility = "hidden";;
+    startTime = Date.now();
+    gamePaused = false;
+    interval = setInterval(gameLoop, 1000);
+  }, 2500);
+}
+
+function checkTimeForQuestion() {
+  const now = Date.now();
+  if (!gamePaused && now - startTime >= 30000) {
+    gamePaused = true;
+    clearInterval(interval);
+    askAreaQuestion();
   }
 }
 
 function resetGame() {
-  grid = Array.from({ length: gridRows }, () => Array(gridCols).fill(0));
-  newPiece();
+  board = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
   score = 0;
-  updateScore();
-  answerShown = false;
+  document.getElementById("score").textContent = "Skóre: 0";
+  spawnPiece();
+  drawBoard();
+  startTime = Date.now();
+  gamePaused = false;
+  interval = setInterval(gameLoop, 1000);
 }
 
-function newPiece() {
-  let shape = random(shapes);
-  currentPiece = {
-    shape: shape.map(row => [...row]),
-    x: floor(gridCols / 2) - floor(shape[0].length / 2),
-    y: 0
-  };
-}
 
-function drawGrid() {
-  for (let r = 0; r < gridRows; r++) {
-    for (let c = 0; c < gridCols; c++) {
-      stroke(0);
-      fill(grid[r][c] ? "#79c2d0" : 255);
-      rect(c * cellSize, r * cellSize, cellSize, cellSize);
-    }
+document.addEventListener("keydown", e => {
+  if (e.key === "r" || e.key === "R") { resetGame(); return; }
+
+  if (document.activeElement.id === "answerInput" && (e.key === "ArrowUp" || e.key === "ArrowDown")) {
+    e.preventDefault(); return;
   }
-}
 
-function drawPiece(p) {
-  fill("#e26a6a");
-  for (let r = 0; r < p.shape.length; r++) {
-    for (let c = 0; c < p.shape[r].length; c++) {
-      if (p.shape[r][c]) {
-        rect((p.x + c) * cellSize, (p.y + r) * cellSize, cellSize, cellSize);
-      }
-    }
+  if (gamePaused) {
+    if (e.key === "Enter") submitAnswer();
+    return;
   }
-}
-
-function movePiece(p, dx, dy) {
-  if (!collides(p, dx, dy)) {
-    p.x += dx;
-    p.y += dy;
-    return true;
+  switch (e.key) {
+    case "ArrowLeft": move(-1); break;
+    case "ArrowRight": move(1); break;
+    case "ArrowDown": drop(); break;
+    case "ArrowUp": rotatePiece(); break;
+    case "Enter": submitAnswer(); break;
+    case "r":
+    case "R": resetGame(); break;
   }
-  return false;
-}
+});
 
-function collides(p, dx, dy) {
-  for (let r = 0; r < p.shape.length; r++) {
-    for (let c = 0; c < p.shape[r].length; c++) {
-      if (p.shape[r][c]) {
-        let newX = p.x + c + dx;
-        let newY = p.y + r + dy;
-        if (newX < 0 || newX >= gridCols || newY >= gridRows || (newY >= 0 && grid[newY][newX])) {
-          return true;
-        }
-      }
-    }
-  }
-  return false;
-}
-
-function mergeToGrid(p) {
-  for (let r = 0; r < p.shape.length; r++) {
-    for (let c = 0; c < p.shape[r].length; c++) {
-      if (p.shape[r][c]) {
-        grid[p.y + r][p.x + c] = 1;
-      }
-    }
-  }
-}
-
-function clearFullRows() {
-  for (let r = gridRows - 1; r >= 0; r--) {
-    if (grid[r].every(cell => cell)) {
-      grid.splice(r, 1);
-      grid.unshift(Array(gridCols).fill(0));
-      score += 10;
-      updateScore();
-    }
-  }
-}
-
-function updateScore() {
-  document.getElementById("score").innerText = "Skóre: " + score;
-}
-
-function rotatePiece(p) {
-  let newShape = p.shape[0].map((_, i) => p.shape.map(row => row[i])).reverse();
-  let testPiece = { shape: newShape, x: p.x, y: p.y };
-  if (!collides(testPiece, 0, 0)) {
-    p.shape = newShape;
-  }
-}
-
-function keyPressed() {
-  if (keyCode === LEFT_ARROW) movePiece(currentPiece, -1, 0);
-  else if (keyCode === RIGHT_ARROW) movePiece(currentPiece, 1, 0);
-  else if (keyCode === DOWN_ARROW) movePiece(currentPiece, 0, 1);
-  else if (keyCode === UP_ARROW) rotatePiece(currentPiece);
-  else if (key === "R" || key === "r") resetGame();
-}
-
-function checkAnswer() {
-  const answer = parseInt(document.getElementById("answer-input").value);
-  const actual = grid.flat().reduce((a, b) => a + b, 0);
-  if (answer === actual) {
-    score += 50;
-  } else {
-    score -= 25;
-  }
-  updateScore();
-  document.getElementById("answer-input").value = "";
-}
+resetGame();
